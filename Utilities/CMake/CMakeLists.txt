@@ -362,12 +362,12 @@ endif()
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE
-        ../..
-        ../../Source
-        ../../Source/Common
-        ../../Source/HTTP
-        ../../Source/Logger
-        ../../Include/httpClient
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Source
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/Common
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/HTTP
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/Logger
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../Include/httpClient
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include>
         $<INSTALL_INTERFACE:include>
