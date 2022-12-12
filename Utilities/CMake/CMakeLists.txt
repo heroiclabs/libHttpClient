@@ -67,7 +67,6 @@ endif()
 
 add_definitions(-D_NO_ASYNCRTIMP -D_NO_PPLXIMP -D_NO_XSAPIIMP -DXSAPI_BUILD)
 
-
 if(DEFINED MSVC_VERSION)
     set_source_files_properties(../../Source/Common/pch.cpp PROPERTIES COMPILE_FLAGS "/Ycpch.h")
 endif()
@@ -154,6 +153,10 @@ set(Curl_Source_Files
 set(Windows_Logger_Source_Files
    ../../Source/Logger/Win/win_logger.cpp
    )
+
+set(Apple_Logger_Source_Files
+   ../../Source/Logger/Apple/apple_logger.cpp
+)
 
 set(UnitTests_Source_Files_Support
     ../../Tests/UnitTests/Support/DefineTestMacros.h
@@ -316,7 +319,7 @@ if( APPLE )
         ${Apple_HTTP_Source_Files}
         ${Task_Source_Files}
         ${Task_Apple_Source_Files}
-        ${Generic_Logger_Source_Files}
+        ${Apple_Logger_Source_Files}
         )
 endif()
 
