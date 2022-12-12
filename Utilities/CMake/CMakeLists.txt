@@ -19,6 +19,8 @@ else()
         set (PROJECT_NAME libHttpClient.Win32.C)
     elseif( GDK )
         set (PROJECT_NAME libHttpClient.GDK.C)
+    elseif( APPLE )
+        set (PROJECT_NAME libHttpClient.Apple.C)
     else()
         if( WINRT )
             set (PROJECT_NAME libHttpClient.UWP.WinRT)
@@ -56,37 +58,38 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-add_compile_options(/Zm300 /bigobj)
-if (WINDOWS_STORE OR WINDOWS_PHONE)
-    add_compile_options(/ZW)
+if(DEFINED MSVC_VERSION)
+    add_compile_options(/Zm300 /bigobj)
+    if (WINDOWS_STORE OR WINDOWS_PHONE)
+        add_compile_options(/ZW)
+    endif()
 endif()
 
 add_definitions(-D_NO_ASYNCRTIMP -D_NO_PPLXIMP -D_NO_XSAPIIMP -DXSAPI_BUILD)
 
-set_source_files_properties(../../../Source/Common/pch.cpp PROPERTIES COMPILE_FLAGS "/Ycpch.h")
+
+if(DEFINED MSVC_VERSION)
+    set_source_files_properties(../../../Source/Common/pch.cpp PROPERTIES COMPILE_FLAGS "/Ycpch.h")
+endif()
 
 if (NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio .*")
     set_property(SOURCE ../../../Source/Common/pch.cpp APPEND PROPERTY OBJECT_OUTPUTS "${CMAKE_CURRENT_BINARY_DIR}/pch.pch")
     set_property(SOURCE ${SOURCES} APPEND PROPERTY OBJECT_DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/pch.pch")
 endif()
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Common
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/HTTP
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Logger
-    $<BUILD_INTERFACE:${PATH_TO_ROOT}/Include>
-    $<INSTALL_INTERFACE:Include>
-    $<BUILD_INTERFACE:${PATH_TO_ROOT}/Include/httpClient>
-    $<INSTALL_INTERFACE:Include/httpClient>
-)
-
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 set(Task_Windows_Source_Files
     ../../../Source/Task/ThreadPool_win32.cpp
     ../../../Source/Task/WaitTimer_win32.cpp
+    )
+
+set(Task_Apple_Source_Files
+    ../../Source/Task/ThreadPool_stl.cpp
+    ../../Source/Task/iOS/ios_WaitTimer.mm
+    ../../Source/Task/iOS/ios_WaitTimer_target.h
+    ../../Source/Task/iOS/ios_WaitTimer_target.mm
+    ../../Source/Task/iOS/ios_WaitTimerImpl.h
     )
 
 set(WinRT_WebSocket_Source_Files
@@ -128,6 +131,15 @@ set(XMLHttp_HTTP_Source_Files
     ../../../Source/HTTP/XMLHttp/http_request_stream.h
     ../../../Source/HTTP/XMLHttp/xmlhttp_http_task.cpp
     ../../../Source/HTTP/XMLHttp/xmlhttp_http_task.h
+    )
+
+set(Apple_HTTP_Source_Files
+    ../../Source/HTTP/Apple/http_apple.h
+    ../../Source/HTTP/Apple/http_apple.mm
+    ../../Source/HTTP/Apple/request_body_stream.h
+    ../../Source/HTTP/Apple/request_body_stream.mm
+    ../../Source/HTTP/Apple/session_delegate.h
+    ../../Source/HTTP/Apple/session_delegate.mm
     )
 
 set(Curl_Source_Files
@@ -298,6 +310,16 @@ if( GDK )
         )
 endif()
 
+if( APPLE )
+    list(APPEND
+        SOURCE_FILES
+        ${Apple_HTTP_Source_Files}
+        ${Task_Source_Files}
+        ${Task_Apple_Source_Files}
+        ${Generic_Logger_Source_Files}
+        )
+endif()
+
 if( TAEF )
     message(STATUS "TAEF source group")
     source_group("C++ Source\\UnitTests\\Support" FILES ${UnitTests_Source_Files_Support})
@@ -331,8 +353,28 @@ endif()
 list( SORT SOURCE_FILES )
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
+
 set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "/INCREMENTAL:NO")
 set(CMAKE_STATIC_LINKER_FLAGS "/INCREMENTAL:NO")
+
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        ../..
+        ../../Source
+        ../../Source/Common
+        ../../Source/HTTP
+        ../../Source/Logger
+        ../../include/httpClient
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include>
+        $<INSTALL_INTERFACE:include>
+)
+
+if (APPLE)
+    target_link_libraries(${PROJECT_NAME} "-framework Foundation")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-fobjc-arc")
+endif()
 
 message(STATUS "CMAKE_SYSTEM_VERSION='${CMAKE_SYSTEM_VERSION}'")
 message(STATUS "CMAKE_SYSTEM_NAME='${CMAKE_SYSTEM_NAME}'")
