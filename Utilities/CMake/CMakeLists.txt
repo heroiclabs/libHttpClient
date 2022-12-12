@@ -194,7 +194,7 @@ get_common_hc_source_files(
     Mock_Source_Files
     HTTP_Source_Files
     Logger_Source_Files
-    "../../.."
+    "../.."
     )
 
 message(STATUS "Common source group")
