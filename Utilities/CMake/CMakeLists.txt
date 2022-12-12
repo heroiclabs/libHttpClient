@@ -370,12 +370,11 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/Common
         ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/HTTP
         ${CMAKE_CURRENT_SOURCE_DIR}/../../Source/Logger
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../Include/httpClient
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:Include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include/httpClient>
-        $<INSTALL_INTERFACE:include/httpClient>
+        $<INSTALL_INTERFACE:Include/httpClient>
 )
 
 if (APPLE)
