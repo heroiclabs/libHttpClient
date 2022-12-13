@@ -63,16 +63,6 @@ if (WINDOWS_STORE OR WINDOWS_PHONE)
 endif()
 endif()
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Common
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/HTTP
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Source/Logger
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../Include/httpClient
-    )
-
 set(CMAKE_SUPPRESS_REGENERATION true)
 
 set(Task_Windows_Source_Files
@@ -421,10 +411,12 @@ target_include_directories(${PROJECT_NAME}
         ../../Source/Common
         ../../Source/HTTP
         ../../Source/Logger
-        ../../include/httpClient
+        ../../Include/httpClient
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:Include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include/httpClient>
+        $<INSTALL_INTERFACE:Include/httpClient>
 )
 
 target_link_libraries(${PROJECT_NAME}
