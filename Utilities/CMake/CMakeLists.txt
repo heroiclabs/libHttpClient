@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 3.23)
+
 if( SHIP )
     set (PROJECT_NAME libHttpClient.Ship)
 elseif( UNITTEST )
@@ -33,7 +34,6 @@ else()
     endif()
 endif()
 
-set(LIBHTTPCLIENT_TARGET ${PROJECT_NAME} PARENT_SCOPE)
 project (${PROJECT_NAME} LANGUAGES CXX)
 
 if(MSVC_VERSION GREATER 1919)
@@ -47,11 +47,6 @@ elseif(MSVC_VERSION GREATER 1700)
 elseif(MSVC_VERSION GREATER 1600)
   set(COMPILER_VERSION "11")
 endif()
-
-#if(CMAKE_CONFIGURATION_TYPES)
-#  set(CMAKE_CONFIGURATION_TYPES Debug)
-#  set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "Reset the configurations to what we need" FORCE)
-#endif()
 
 set(CMAKE_USE_RELATIVE_PATHS TRUE)
 
@@ -215,7 +210,6 @@ set(UnitTests_Source_Files_Tests
 
 include(GetCommonHCSourceFiles.cmake)
 get_common_hc_source_files(
-    Public_Source_Files
     Common_Source_Files
     Global_Source_Files
     WebSocket_Source_Files
@@ -227,7 +221,6 @@ get_common_hc_source_files(
     )
 
 message(STATUS "Common source group")
-source_group("Header Files" FILES ${Public_Source_Files})
 source_group("C++ Source\\Common" FILES ${Common_Source_Files})
 source_group("C++ Source\\Global" FILES ${Global_Source_Files})
 source_group("C++ Source\\WebSocket" FILES ${WebSocket_Source_Files})
@@ -236,7 +229,6 @@ source_group("C++ Source\\HTTP" FILES ${HTTP_Source_Files})
 source_group("C++ Source\\Logger" FILES ${Logger_Source_Files})
 
 set( SOURCE_FILES
-    ${Public_Source_Files}
     ${Common_Source_Files}
     ${Global_Source_Files}
     ${WebSocket_Source_Files}
@@ -413,7 +405,6 @@ if( TE )
         )
 endif()
 
-
 add_compile_definitions(
         _VARIADIC_MAX=10
         ENABLE_INTSAFE_SIGNED_FUNCTIONS
@@ -421,7 +412,7 @@ add_compile_definitions(
 
 list( SORT SOURCE_FILES )
 add_library(${PROJECT_NAME} OBJECT ${SOURCE_FILES})
-#target_precompile_headers(${PROJECT_NAME} PRIVATE ../../Source/Common/pch.h)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
 
 target_include_directories(${PROJECT_NAME}
         PRIVATE
