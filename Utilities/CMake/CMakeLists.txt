@@ -422,7 +422,6 @@ target_include_directories(${PROJECT_NAME}
         ../../Source/Common
         ../../Source/HTTP
         ../../Source/Logger
-        ../../Include/httpClient
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../Include>
         $<INSTALL_INTERFACE:Include>
